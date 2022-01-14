@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar target/dependency/webapp-runner.jar --port $PORT target/dbms-0.0.1-SNAPSHOT.war
+web: java $JAVA_OPTS -jar dbms-0.0.1-SNAPSHOT-microbundle.jar --port $PORT
