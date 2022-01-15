@@ -1,7 +1,6 @@
 package dbms.core;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import dbms.core.databasemanager.Manager;
@@ -10,7 +9,9 @@ import dbms.core.diskmanager.DiskManagerException;
 import dbms.core.filemanager.Record;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 
 public enum DBMS {
@@ -60,39 +61,29 @@ public enum DBMS {
 	}
 	
 	public JsonArray getAllRecords(String relationName) {
-		JsonArray recordsJson = null;
-		List<JsonObject> objs = new ArrayList<JsonObject>();
+		JsonArrayBuilder recordsBuilder = Json.createArrayBuilder();
 		
 		try {
 			List<Record> records = this.dataBaseManager.readRecords(relationName);
-			if(records.isEmpty()) {
-				recordsJson = Json.createArrayBuilder().build();
-			}
-			else {
+			if(!records.isEmpty()) {
 				RelationDefinition relation = this.dataBaseManager.getRelation(relationName);
 				for(Record record : records) {
+					JsonObjectBuilder recordBuilder = Json.createObjectBuilder();
+					JsonArrayBuilder recordValuesBuilder = Json.createArrayBuilder();
 					List<String> values = record.getValues();
-					List<JsonObject> valueObjs = new ArrayList<JsonObject>();
 					for(int i=0; i<values.size(); i++) {
-						valueObjs.add(
-									Json.createObjectBuilder()
-										.add("column", relation.getColumnTypes().get(i))
-										.add("value", values.get(i))
-										.build()
-								);
+						JsonObjectBuilder valueBuilder = Json.createObjectBuilder();
+						valueBuilder.add("column", relation.getColumnTypes().get(i)).add("value", values.get(i));
+						recordValuesBuilder.add(valueBuilder);
 					}
-					objs.add( 
-							Json.createObjectBuilder()
-								.add("values", Json.createArrayBuilder(valueObjs).build())
-								.build()
-						);
+					recordBuilder.add("values", recordValuesBuilder);
+					recordsBuilder.add(recordBuilder);
 				}
-				recordsJson = Json.createArrayBuilder(objs).build();
 			}
 		} catch (DiskManagerException e) {
 			throw new DBMSException("Error while processing SELECTALL query", e.getCause());
 		}
 		
-		return recordsJson;
+		return recordsBuilder.build();
 	}
 }
