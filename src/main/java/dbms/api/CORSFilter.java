@@ -13,7 +13,7 @@ public class CORSFilter implements ContainerResponseFilter {
 	@Override
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
 			throws IOException {
-		responseContext.getHeaders().add("Access-Control-Allow-Origin", "https://izemaghilas.github.io/dbms-ui");
+		responseContext.getHeaders().add("Access-Control-Allow-Origin", "https://izemaghilas.github.io/dbms-ui, 127.0.0.1:3000");
 		responseContext.getHeaders().add("Access-Control-Allow-Headers", "content-type");
 		responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST");
 	}
